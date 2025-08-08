@@ -16,7 +16,7 @@ assert params['batchSize'], "Error: 'batchSize' not found in configuration.yaml.
 assert params['epochs'], "Error: 'epochs' not found in configuration.yaml."
 assert params['imgWidth'] == params['imgHeight'], "Error: 'imgWidth' and 'imgHeight' must be equal in configuration.yaml."
 
-# If everthing is ok, print the parameters
+# If everything is ok, print the parameters
 print("[INFO] Configuration parameters...")
 print("* Batch size........................:", params['batchSize'])
 print("* Image height......................:", params['imgHeight'])
