@@ -1,0 +1,11 @@
+# Configuration file for a machine learning project
+batchSize: 32
+imgHeight: 180
+imgWidth: 180
+epochs: 20
+
+# Paths to datasets
+trainDatasetPath: "data/train"
+
+# Paths to save model
+modelPath: "data/model"
