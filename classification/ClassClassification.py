@@ -24,6 +24,25 @@ class Classification:
         self.epochs     = parameters['epochs']
         self.imgWidth   = parameters['imgWidth']
         self.imgHeight  = parameters['imgHeight']
+        self.modelPath  = parameters['modelPath']
+
+    # Check if model is already trained?
+    def isModelTrained(self):
+        print("[INFO] Checking trained model...")
+
+        if not os.path.exists(self.modelPath):
+            print("[INFO] Model not found at {}, training required.".format(self.modelPath))
+
+            # If model is not trained, train the model
+            model = self.execute()
+            return model
+
+        else:
+            print("[INFO] Model found at {}, loading...".format(self.modelPath))
+
+            # If model is trained, load the model
+            model = tf.keras.models.load_model(self.modelPath)
+            return model
 
     # Function to load the dataset
     def loadDataset(self):

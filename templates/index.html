@@ -69,7 +69,7 @@
                 </form>
             </section>
 
-            {% if prediction and image_data %}
+            {% if prediction and imageData %}
             <section class="mt-12 animate-fade-in-up" style="animation-delay: 0.4s;">
                 <h2 class="text-2xl font-bold text-white mb-6">2. Analysis Results</h2>
                 <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
@@ -77,7 +77,7 @@
                     <div class="lg:col-span-2 glass-card rounded-xl p-6 flex flex-col">
                         <h3 class="text-lg font-semibold text-white mb-4">Input Image</h3>
                         <div class="aspect-w-1 aspect-h-1 bg-slate-900/50 rounded-lg overflow-hidden flex-grow">
-                             <img src="data:image/jpeg;base64,{{ image_data }}" alt="Uploaded Image" class="w-full h-full object-cover">
+                             <img src="data:image/jpeg;base64,{{ imageData }}" alt="Uploaded Image" class="w-full h-full object-cover">
                         </div>
                     </div>
 
