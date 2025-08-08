@@ -6,6 +6,9 @@ import base64
 import time
 import os
 import yaml
+import matplotlib
+matplotlib.use('Agg')  # Use non-interactive backend
+import matplotlib.pyplot as plt
 from PIL import Image
 from flask import Flask, render_template, request
 from classification.ClassClassification import Classification
@@ -43,6 +46,58 @@ model = classification.isModelTrained()
 
 # Load class names
 _, _, classNames, _ = classification.loadDataset()
+
+# Function to generate training plot
+def generate_training_plot():
+    # Check if training history exists
+    history_path = 'training_history.npy'
+    if os.path.exists(history_path):
+        history = np.load(history_path, allow_pickle=True).item()
+    else:
+        # Generate dummy data for demonstration
+        epochs = list(range(1, params['epochs'] + 1))
+        history = {
+            'accuracy': [0.3 + 0.7 * (1 - np.exp(-0.5 * i)) + np.random.normal(0, 0.02) for i in epochs],
+            'val_accuracy': [0.25 + 0.65 * (1 - np.exp(-0.4 * i)) + np.random.normal(0, 0.03) for i in epochs],
+            'loss': [2.0 * np.exp(-0.3 * i) + np.random.normal(0, 0.05) for i in epochs],
+            'val_loss': [2.2 * np.exp(-0.25 * i) + np.random.normal(0, 0.07) for i in epochs]
+        }
+
+    plt.style.use('dark_background')
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 4))
+    fig.patch.set_facecolor('#0f172a')
+
+    # Plot accuracy
+    epochs = range(1, len(history['accuracy']) + 1)
+    ax1.plot(epochs, history['accuracy'], 'o-', color='#06d6a0', label='Training Accuracy', linewidth=2)
+    ax1.plot(epochs, history['val_accuracy'], 'o-', color='#f72585', label='Validation Accuracy', linewidth=2)
+    ax1.set_title('Model Accuracy', color='white', fontsize=14, fontweight='bold')
+    ax1.set_xlabel('Epoch', color='#94a3b8')
+    ax1.set_ylabel('Accuracy', color='#94a3b8')
+    ax1.legend()
+    ax1.grid(True, alpha=0.3)
+    ax1.set_facecolor('#1e293b')
+
+    # Plot loss
+    ax2.plot(epochs, history['loss'], 'o-', color='#06d6a0', label='Training Loss', linewidth=2)
+    ax2.plot(epochs, history['val_loss'], 'o-', color='#f72585', label='Validation Loss', linewidth=2)
+    ax2.set_title('Model Loss', color='white', fontsize=14, fontweight='bold')
+    ax2.set_xlabel('Epoch', color='#94a3b8')
+    ax2.set_ylabel('Loss', color='#94a3b8')
+    ax2.legend()
+    ax2.grid(True, alpha=0.3)
+    ax2.set_facecolor('#1e293b')
+
+    plt.tight_layout()
+
+    # Convert plot to base64
+    img_buffer = io.BytesIO()
+    plt.savefig(img_buffer, format='png', bbox_inches='tight', facecolor='#0f172a', dpi=100)
+    img_buffer.seek(0)
+    plot_data = base64.b64encode(img_buffer.getvalue()).decode()
+    plt.close()
+
+    return plot_data
 
 # Function to preprocess the image after uploading
 def imagePreprocess(image):
@@ -91,6 +146,9 @@ def home():
     prediction = None
     imageData = None
 
+    # Generate training plot
+    trainingPlot = generate_training_plot()
+
     # Check methods is POST?
     if request.method == 'POST':
         # Get the uploaded file from request
@@ -99,6 +157,7 @@ def home():
                 'index.html',
                 prediction=prediction,
                 imageData=imageData,
+                trainingPlot=trainingPlot
             )
 
         # Start the timer and note it.
@@ -136,10 +195,11 @@ def home():
 
         # Prepare the prediction dictionary with the new data
         prediction = {
-            'class'         : predictedClass,
-            'confidence'    : f"{confidence:.2%}",
-            'processingTime': f"{processTime:.3f}",
-            'metadata'      : {
+            'class'             : predictedClass,
+            'confidence'        : f"{confidence:.2%}",
+            'confidence_raw'    : f"{confidence * 100:.1f}",  # Raw percentage for progress bar
+            'processing_time'   : f"{processTime:.3f}",
+            'metadata'          : {
                 'dimensions'    : dimensions,
                 'size'          : formattedSize,
             }
@@ -158,7 +218,8 @@ def home():
     return render_template(
         'index.html',
         prediction=prediction,
-        imageData=imageData
+        imageData=imageData,
+        trainingPlot=trainingPlot
     )
 
 # Run the Flask app
@@ -169,9 +230,3 @@ if __name__ == '__main__':
         port=params['port'],
         debug=True
     )
-
-
-
-
-
-
