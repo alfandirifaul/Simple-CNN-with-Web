@@ -135,7 +135,7 @@ class Classification:
         )
 
         # Save the model to a file
-        model.save(self.modelPath + '/model.keras')
+        model.save(self.modelPath)
 
         # return the training history
         return history
@@ -145,15 +145,27 @@ class Classification:
         # Load the dataset
         trainDataset, validDataset, classNames, numClasses = self.loadDataset()
 
-        # Build the model
-        model = self.buildModel(self.imgWidth, self.imgHeight, numClasses)
+        # Check if model is exists
+        if os.path.exists(self.modelPath):
+            print("[INFO] Model already exists at {}".format(self.modelPath))
+            model = tf.keras.models.load_model(self.modelPath)
+        else:
+            print("[INFO] Building model...")
 
-        # Compile the model
-        model = self.compileModel(model)
+            # Build the model
+            model = self.buildModel(self.imgWidth, self.imgHeight, numClasses)
 
-        # Train the model
-        history = self.trainModel(model, trainDataset, validDataset)
+            # Compile the model
+            model = self.compileModel(model)
 
-        print("[INFO] Training completed and plots saved.")
+            # Train the model
+            history = self.trainModel(model, trainDataset, validDataset)
+            print("[INFO] Training completed.")
+
+        print("[INFO] Model ready for use.")
+        return model
+
+
+
 
 

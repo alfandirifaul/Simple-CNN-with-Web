@@ -8,4 +8,4 @@ epochs: 20
 trainDatasetPath: "data/train"
 
 # Paths to save model
-modelPath: "data/model"
+modelPath: "data/model/model.keras"

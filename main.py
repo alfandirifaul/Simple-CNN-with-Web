@@ -26,4 +26,4 @@ print("* Train dataset path................:", params['trainDatasetPath'])
 print("* Train model path..................:", params['modelPath'])
 
 classification = Classification(params)
-classification.execute()
+model = classification.execute()
