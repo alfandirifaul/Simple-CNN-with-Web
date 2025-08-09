@@ -91,9 +91,25 @@
             <h1 class="text-4xl md:text-5xl font-extrabold text-white tracking-tight">Flower Image Classification</h1>
             <p class="text-lg text-slate-400 mt-3 max-w-2xl mx-auto">Harness the power of AI to instantly identify
                 flower species from any image.</p>
+
+            <div class="max-w-3xl mx-auto mt-6 p-4 bg-slate-900/40 rounded-lg border border-slate-700/50 animate-fade-in-up" style="animation-delay: 0.1s;">
+                <p class="text-center text-sm text-slate-400 mb-3">
+                    <svg class="w-5 h-5 inline-block mr-1.5 -mt-0.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    This AI model can currently identify the following flower types:
+                </p>
+                <div class="flex flex-wrap justify-center gap-2">
+                    <span class="bg-slate-700 text-slate-200 text-xs font-medium px-3 py-1 rounded-full">Daisy</span>
+                    <span class="bg-slate-700 text-slate-200 text-xs font-medium px-3 py-1 rounded-full">Dandelion</span>
+                    <span class="bg-slate-700 text-slate-200 text-xs font-medium px-3 py-1 rounded-full">Orchid</span>
+                    <span class="bg-slate-700 text-slate-200 text-xs font-medium px-3 py-1 rounded-full">Rose</span>
+                    <span class="bg-slate-700 text-slate-200 text-xs font-medium px-3 py-1 rounded-full">Sunflower</span>
+                    <span class="bg-slate-700 text-slate-200 text-xs font-medium px-3 py-1 rounded-full">Tulip</span>
+                </div>
+            </div>
         </div>
 
-        <!-- Upload Section -->
         <section class="glass-card rounded-xl shadow-2xl p-6 md:p-8 animate-fade-in-up" style="animation-delay: 0.2s;">
             <div class="flex items-center justify-between mb-6">
                 <h2 class="text-2xl font-bold text-white">1. Upload an Image</h2>
@@ -125,7 +141,6 @@
             </form>
         </section>
 
-        <!-- Classification Results Section -->
         {% if prediction and imageData %}
         <section class="mt-12 animate-fade-in-up result-section show" id="classification-results" style="animation-delay: 0.4s;">
             <div class="flex items-center justify-between mb-6">
@@ -138,7 +153,6 @@
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
-                <!-- Input Image Display -->
                 <div class="lg:col-span-2 glass-card rounded-xl p-6 flex flex-col">
                     <h3 class="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
                         <svg class="w-5 h-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -152,9 +166,7 @@
                     </div>
                 </div>
 
-                <!-- Classification Results -->
                 <div class="lg:col-span-3 space-y-6">
-                    <!-- Main Prediction -->
                     <div class="glass-card rounded-xl p-6 text-center">
                         <div class="flex items-center justify-center space-x-2 mb-3">
                             <svg class="w-6 h-6 text-green-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -165,9 +177,7 @@
                         <p class="text-4xl font-extrabold text-brand-light capitalize">{{ prediction.class }}</p>
                     </div>
 
-                    <!-- Metrics Grid -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Confidence Level -->
                         <div class="glass-card rounded-xl p-6">
                             <div class="flex items-center space-x-3 mb-4">
                                 <svg class="w-6 h-6 text-brand" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -182,7 +192,6 @@
                             <p class="text-right text-2xl font-bold text-slate-300">{{ prediction.confidence }}</p>
                         </div>
 
-                        <!-- Processing Time -->
                         <div class="glass-card rounded-xl p-6">
                             <div class="flex items-center space-x-3 mb-4">
                                 <svg class="w-6 h-6 text-brand" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -197,7 +206,6 @@
                         </div>
                     </div>
 
-                    <!-- Image Metadata -->
                     <div class="glass-card rounded-xl p-6">
                         <div class="flex items-center space-x-3 mb-4">
                             <svg class="w-6 h-6 text-brand" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -219,7 +227,6 @@
         </section>
         {% endif %}
 
-        <!-- Training Visualization Section -->
         {% if trainingPlot %}
         <section class="mt-16 animate-fade-in-up result-section show" id="training-visualization" style="animation-delay: 0.6s;">
             <div class="flex items-center justify-between mb-6">
@@ -233,7 +240,6 @@
             </div>
 
             <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
-                <!-- Training Plot -->
                 <div class="xl:col-span-2 glass-card rounded-xl p-6">
                     <h3 class="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
                         <svg class="w-5 h-5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -246,7 +252,6 @@
                     </div>
                 </div>
 
-                <!-- Training Stats -->
                 <div class="space-y-6">
                     <div class="glass-card rounded-xl p-6">
                         <h4 class="text-base font-semibold text-white mb-4 flex items-center space-x-2">
