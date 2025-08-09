@@ -2,7 +2,7 @@
 batchSize: 32
 imgHeight: 180
 imgWidth: 180
-epochs: 50
+epochs: 10
 
 # Paths to datasets
 trainDatasetPath: "data/train"
@@ -12,3 +12,6 @@ modelPath: "data/model/model.keras"
 
 # Server configuration
 port: 5001
+
+# Model parameters
+modelName: "MobileNetV3Large"

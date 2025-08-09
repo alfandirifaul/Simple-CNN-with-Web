@@ -12,6 +12,14 @@ import matplotlib.pyplot as plt
 from PIL import Image
 from flask import Flask, render_template, request
 from classification.ClassClassification import Classification
+import ssl
+import warnings
+
+# Nonsecure SSL context for local development
+ssl._create_default_https_context = ssl._create_unverified_context
+
+# Suppress UserWarnings
+warnings.filterwarnings("ignore", category=UserWarning)
 
 # First of all, read parameters from configuration file
 assert os.path.exists('configuration.yaml'), "Error: configuration.yaml file not found."

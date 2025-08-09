@@ -10,21 +10,23 @@ matplotlib.use('Agg')
 # Suppress TensorFlow warnings
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
+
 # Define the Classification class
 class Classification:
 
     # Constructor
-    def __init__ (self, parameters):
+    def __init__(self, parameters):
 
         # Initialize parameters
         self.parameters = parameters
-        self.path       = parameters['trainDatasetPath']
-        self.modelPath  = parameters['modelPath']
-        self.batchsz    = parameters['batchSize']
-        self.epochs     = parameters['epochs']
-        self.imgWidth   = parameters['imgWidth']
-        self.imgHeight  = parameters['imgHeight']
-        self.modelPath  = parameters['modelPath']
+        self.path = parameters['trainDatasetPath']
+        self.modelPath = parameters['modelPath']
+        self.batchsz = parameters['batchSize']
+        self.epochs = parameters['epochs']
+        self.imgWidth = parameters['imgWidth']
+        self.imgHeight = parameters['imgHeight']
+        self.modelPath = parameters['modelPath']
+        self.modelName = parameters['modelName']
 
     # Check if model is already trained?
     def isModelTrained(self):
@@ -83,8 +85,58 @@ class Classification:
         # Return variables
         return trainDataset, validDataset, classNames, numClasses
 
+    # Function to build the model using MobileNetV3 (Transfer Learning)
+    def buildMobileNetV3Model(self, numClasses):
+        """
+        Membangun model menggunakan MobileNetV3 dengan transfer learning.
+        Versi ini sudah dikoreksi dengan preprocessing dan augmentasi yang benar.
+        """
+        print(f"[INFO] Building model using {self.modelName} (Transfer Learning)...")
+
+        # LANGKAH 1: Definisikan input dan lapisan augmentasi
+        inputs = tf.keras.Input(shape=(self.imgHeight, self.imgWidth, 3))
+
+        data_augmentation = tf.keras.Sequential([
+            tf.keras.layers.RandomFlip("horizontal"),
+            tf.keras.layers.RandomRotation(0.2),
+            tf.keras.layers.RandomZoom(0.1),
+        ], name='data_augmentation')
+
+        x = data_augmentation(inputs)
+
+        # LANGKAH 2: Terapkan preprocessing yang BENAR untuk MobileNet
+        # Ini adalah koreksi paling kritis. Mengubah skala piksel ke [-1, 1].
+        x = tf.keras.applications.mobilenet_v3.preprocess_input(x)
+
+        # LANGKAH 3: Pilih dan muat model dasar (base model)
+        if self.modelName == 'MobileNetV3Small':
+            base_model = tf.keras.applications.MobileNetV3Small(
+                input_shape=(self.imgHeight, self.imgWidth, 3),
+                include_top=False,
+                weights='imagenet'
+            )
+        else:  # Asumsikan 'MobileNetV3Large' atau lainnya
+            base_model = tf.keras.applications.MobileNetV3Large(
+                input_shape=(self.imgHeight, self.imgWidth, 3),
+                include_top=False,
+                weights='imagenet'
+            )
+
+        # Bekukan bobot dari model dasar agar tidak ikut terlatih
+        base_model.trainable = False
+
+        # LANGKAH 4: Sambungkan ke model dasar dan buat kepala klasifikasi
+        x = base_model(x, training=False)
+        x = tf.keras.layers.GlobalAveragePooling2D()(x)
+        x = tf.keras.layers.Dropout(0.2)(x)
+        outputs = tf.keras.layers.Dense(numClasses, activation='softmax')(x)
+
+        # LANGKAH 5: Buat model final
+        model = tf.keras.Model(inputs, outputs)
+        return model
+
     # Function to build the model
-    def buildModel(self, imgWidth, imgHeight, numClasses):
+    def buildCustomModel(self, imgWidth, imgHeight, numClasses):
         print("[INFO] Building model...")
 
         # Create the data augmentation layer
@@ -125,6 +177,12 @@ class Classification:
         # Return the model
         return model
 
+    def buildModel(self, numClasses):
+        if self.modelName == 'CustomModel':
+            return self.buildCustomModel(numClasses)
+        else:
+            return self.buildMobileNetV3Model(numClasses)
+
     # Function to compile the model
     def compileModel(self, model):
         print("[INFO] Compiling model...")
@@ -161,30 +219,21 @@ class Classification:
 
     # Execute the training process
     def execute(self):
-        # Load the dataset
-        trainDataset, validDataset, classNames, numClasses = self.loadDataset()
-
-        # Check if model is exists
+        print("[INFO] Checking for a pre-trained model...")
         if os.path.exists(self.modelPath):
-            print("[INFO] Model already exists at {}".format(self.modelPath))
+            print(f"[INFO] Model found at {self.modelPath}, loading...")
             model = tf.keras.models.load_model(self.modelPath)
         else:
-            print("[INFO] Building model...")
+            print(f"[INFO] Model not found at {self.modelPath}, starting a new training process.")
+            model = self._train_new_model()
 
-            # Build the model
-            model = self.buildModel(self.imgWidth, self.imgHeight, numClasses)
-
-            # Compile the model
-            model = self.compileModel(model)
-
-            # Train the model
-            history = self.trainModel(model, trainDataset, validDataset)
-            print("[INFO] Training completed.")
-
-        print("[INFO] Model ready for use.")
+        print("[INFO] Model is ready for use.")
         return model
 
-
-
-
-
+    # Private method for the actual training pipeline
+    def _train_new_model(self):
+        trainDataset, validDataset, _, numClasses = self.loadDataset()
+        model = self.buildModel(numClasses)
+        model = self.compileModel(model)
+        _ = self.trainModel(model, trainDataset, validDataset)
+        return model
